@@ -1,32 +1,37 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view/>
-  </div>
+	<div id="app">
+		<component :is="component" />
+	</div>
 </template>
+<script>
+import { mapGetters } from 'vuex'
 
+export default {
+	data() {
+		return {
+			components: {
+				login    : () => import('@/views/Login'),
+				errorPage: () => import('@/views/ErrorPage'),
+			},
+			component: '',
+		}
+	},
+	watch: {
+		errorPageData(newError) {
+			this.isReady = false
+			if (Object.keys(newError).length) {
+				this.component = this.components.errorPage
+				this.isReady = true
+			}
+		},
+	},
+	computed: {
+		...mapGetters('SystemStore', ['errorPageData']),
+	},
+	created() {
+		 this.component = this.components.login
+	},
+}
+</script>
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-
-#nav {
-  padding: 30px;
-}
-
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-#nav a.router-link-exact-active {
-  color: #42b983;
-}
 </style>
